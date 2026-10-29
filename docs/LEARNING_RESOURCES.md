@@ -19,4 +19,4 @@ Study in this order:
 4. [DuckDB-WASM instantiation](https://duckdb.org/docs/stable/clients/wasm/instantiation): how the worker and Wasm bundle start.
 5. [DuckDB-WASM data ingestion](https://duckdb.org/docs/stable/clients/wasm/data_ingestion): how the Parquet file becomes available to SQL queries.
 
-In this app, Vite serves the Wasm and worker assets. The browser starts DuckDB inside a worker, fetches `inventory.parquet`, registers its bytes, creates a SQL view, and queries the view when the user searches. Python only generates the sample Parquet file during development.
+In this app, Vite serves the Wasm and worker assets. The browser starts DuckDB inside a worker, fetches `inventory.parquet`, registers its bytes, and queries the rows once at startup. A small JavaScript index handles each later search without waiting for the worker. Python only generates the sample Parquet file during development.

@@ -20,8 +20,7 @@ A static browser application for locating inventory in a 3D warehouse. An operat
 
 ## Search and navigation
 
-- Search case-insensitively by name or SKU, returning the first match.
-- Escape user input before passing it to an `ILIKE` expression.
+- Search case-insensitively by name or SKU, returning the first match. After DuckDB loads the Parquet rows, a small normalized JavaScript index serves interactive searches without a worker round trip.
 - Animate the camera continuously from its current position to a view of the selected box.
 - Project the selected box to a floating HTML tooltip showing SKU, name, aisle, and rack.
 - Show status text for loading, searching, success, empty results, and errors.
