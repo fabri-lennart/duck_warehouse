@@ -11,6 +11,8 @@ A static, browser-based warehouse viewer. Search inventory with DuckDB-WASM and 
 
 ## Frontend architecture
 
+For a guided reading path, see [Learning resources](docs/LEARNING_RESOURCES.md).
+
 ```mermaid
 flowchart LR
   UI[Text-only search panel] --> Main[src/main.js]
