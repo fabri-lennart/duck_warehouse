@@ -26,7 +26,7 @@ flowchart LR
   Main --> Tooltip[HTML status and product tooltip]
 ```
 
-The browser loads the Parquet file into DuckDB-WASM, queries products by name or SKU, and passes the matching record to the scene and camera modules. Three.js draws the warehouse and its product instances; GSAP moves the camera from its current position.
+The browser loads the Parquet file through DuckDB-WASM and keeps a normalized in-memory search index for immediate name and SKU lookups. The matching record goes to the scene and camera modules. Three.js draws the warehouse and its product instances; GSAP moves the camera from its current position. Drag the scene to orbit, use the wheel to zoom, and right-drag to pan.
 
 ## Project structure
 

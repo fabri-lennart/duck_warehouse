@@ -10,11 +10,7 @@ function addFloorLabel(scene, text, x, z) {
   canvas.width = 256;
   canvas.height = 128;
   const context = canvas.getContext('2d');
-  context.fillStyle = '#14212b';
-  context.fillRect(0, 0, 256, 128);
-  context.strokeStyle = '#31576a';
-  context.strokeRect(5, 5, 246, 118);
-  context.fillStyle = '#90b2c2';
+  context.fillStyle = '#e5b94f';
   context.font = 'bold 66px Arial';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
@@ -41,6 +37,7 @@ function addRacks(scene) {
       }
       for (const y of [0.45, 3.05, 6.05, 9.05]) {
         for (const dz of [-4.3, 4.3]) parts.push({ x, y, z: z + dz, sx: 10.3, sy: 0.14, sz: 0.19, beam: true });
+        for (const dx of [-5.05, 5.05]) parts.push({ x: x + dx, y, z, sx: 0.19, sy: 0.14, sz: 8.6, beam: true });
       }
     }
   }
@@ -60,6 +57,25 @@ function addRacks(scene) {
   mesh.instanceMatrix.needsUpdate = true;
   mesh.instanceColor.needsUpdate = true;
   scene.add(mesh);
+
+  const shelves = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(10.1, 0.08, 8.5),
+    new THREE.MeshStandardMaterial({ color: 0x2d3643, metalness: 0.35, roughness: 0.7 }),
+    AISLES * RACKS * 3,
+  );
+  let shelfIndex = 0;
+  for (let aisle = 0; aisle < AISLES; aisle++) {
+    for (let rack = 0; rack < RACKS; rack++) {
+      for (const y of [0.47, 3.07, 6.07]) {
+        dummy.position.set(aisle * 14, y, rack * 12);
+        dummy.scale.setScalar(1);
+        dummy.updateMatrix();
+        shelves.setMatrixAt(shelfIndex++, dummy.matrix);
+      }
+    }
+  }
+  shelves.instanceMatrix.needsUpdate = true;
+  scene.add(shelves);
 }
 
 export function createWarehouse(canvas, products) {
@@ -68,7 +84,7 @@ export function createWarehouse(canvas, products) {
   scene.fog = new THREE.FogExp2('#0f1115', 0.0031);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -84,7 +100,7 @@ export function createWarehouse(canvas, products) {
   floor.rotation.x = -Math.PI / 2;
   floor.position.set(175, -0.06, 84);
   scene.add(floor);
-  const grid = new THREE.GridHelper(380, 95, 0x315063, 0x263943);
+  const grid = new THREE.GridHelper(380, 95, 0x334155, 0x1e293b);
   grid.position.set(175, 0, 84);
   scene.add(grid);
 
@@ -96,7 +112,7 @@ export function createWarehouse(canvas, products) {
   }
 
   const boxes = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1.8, 1.85, 2.3),
+    new THREE.BoxGeometry(2.4, 1.85, 2.3),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, emissive: 0x280707, emissiveIntensity: 0.17 }),
     products.length,
   );

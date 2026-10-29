@@ -66,6 +66,7 @@ function renderSelection(product) {
 function renderFrame() {
   requestAnimationFrame(renderFrame);
   if (!warehouse) return;
+  cameraController.controls.update();
   warehouse.renderer.render(warehouse.scene, cameraController.camera);
   if (!selectedPoint || tooltip.hidden) return;
   projected.copy(selectedPoint).project(cameraController.camera);
@@ -82,7 +83,7 @@ async function start() {
   try {
     const products = await loadInventory();
     warehouse = createWarehouse(canvas, products);
-    cameraController = createCamera(canvas.clientWidth, canvas.clientHeight);
+    cameraController = createCamera(canvas, canvas.clientWidth, canvas.clientHeight);
     for (const [label, query] of [['Screw (A1)', 'Screw'], ['Screwdriver (M15)', 'Screwdriver'], ['Hammer (G7)', 'Hammer'], ['Tape (D10)', 'Tape']]) {
       const chip = document.createElement('button');
       chip.type = 'button';
@@ -108,14 +109,13 @@ async function start() {
   }
 }
 
-form.addEventListener('submit', async (event) => {
+form.addEventListener('submit', (event) => {
   event.preventDefault();
   if (!warehouse || !input.value.trim()) return;
   const serial = ++searchSerial;
   setStatus('Searching');
-  button.disabled = true;
   try {
-    const product = await searchInventory(input.value);
+    const product = searchInventory(input.value);
     if (serial !== searchSerial) return;
     if (!product) {
       setStatus('No product found');
@@ -124,13 +124,12 @@ form.addEventListener('submit', async (event) => {
     selectedPoint = warehouse.selectProduct(product.id);
     renderSelection(product);
     setStatus('Flying to product');
-    await cameraController.flyTo(selectedPoint);
-    if (serial === searchSerial) setStatus('Arrived at destination');
+    cameraController.flyTo(selectedPoint, () => {
+      if (serial === searchSerial) setStatus('Arrived at destination');
+    });
   } catch (error) {
     console.error(error);
     setStatus('Search failed');
-  } finally {
-    button.disabled = false;
   }
 });
 
